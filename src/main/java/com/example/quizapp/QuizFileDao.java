@@ -10,7 +10,7 @@ import java.util.List;
 //Dao・・・・Date access object
 public class QuizFileDao {
 
-    private static final String FILE_PATH = "quizzez.txt";
+    private static final String FILE_PATH = "quizzes.txt";
 
     public void write(List<Quiz> quizzes) throws IOException {
         List<String> lines = new ArrayList<>();
