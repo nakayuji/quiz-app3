@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class QuizAppController {
     private List<Quiz> quizzes = new ArrayList<>();
+    private QuizFileDao quizFileDao = new QuizFileDao();
 //戻り値はList＜Quiz＞型
     //引数はない
     @GetMapping("/show")
@@ -31,7 +33,6 @@ public class QuizAppController {
     //戻り値　正解・不正解かを文字列で返す
     @GetMapping("/check")
     public String check(@RequestParam String question, boolean answer){
-        //TODO:回答が正しいかどうかを判断して結果を返す
         //指定されたquestionを登録済みのクイズから検索する
         for (Quiz quiz: quizzes) {
             //もしクイズが見つかったら
@@ -47,5 +48,16 @@ public class QuizAppController {
         }
         //クイズが見つからない場合は「問題がありません」と返す
         return "問題がありません";
+    }
+
+    @PostMapping("/save")
+    public String save(){
+        try {
+            quizFileDao.write(quizzes);
+            return "ファイルに保存しました";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "ファイルの保存に失敗しました";
+        }
     }
 }
