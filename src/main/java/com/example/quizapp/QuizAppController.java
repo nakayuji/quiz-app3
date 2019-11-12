@@ -45,22 +45,23 @@ public class QuizAppController {
     //引数はString型のquestion（質問文）、boolean型のanswer（回答）
     //戻り値　正解・不正解かを文字列で返す
     @GetMapping("/check")
-    public String check(@RequestParam String question, boolean answer){
+    public String check(Model model, @RequestParam String question, boolean answer){
         //指定されたquestionを登録済みのクイズから検索する
         for (Quiz quiz: quizzes) {
             //もしクイズが見つかったら
             if(quiz.getQuestion().equals(question)){
+                model.addAttribute("quiz", quiz);
             //登録されているanswerが一致している場合、「正解」と返され
                 if (quiz.isAnswer() == answer) {
-                    return "正解！";
+                    model.addAttribute("result", "正解！");
                 } else {
-                    return "不正解！";
+                    model.addAttribute("result", "不正解！");
                 }
             }
             //一致してなければ「不正解」と返される
         }
         //クイズが見つからない場合は「問題がありません」と返す
-        return "問題がありません";
+        return "answer";
     }
 
     @PostMapping("/save")
