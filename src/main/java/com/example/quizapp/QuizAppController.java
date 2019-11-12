@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,11 +20,11 @@ public class QuizAppController {
     private QuizFileDao quizFileDao = new QuizFileDao();
 
     @GetMapping("/quiz")
-    public Quiz quiz(){
+    public String quiz(Model model){
         int index = new Random().nextInt(quizzes.size());//引数が３の場合　０〜２　乱数
 
-        return quizzes.get(index);
-
+        model.addAttribute("quiz", quizzes.get(index));
+        return "quiz";
     }
     @GetMapping("/show")
     public String show(Model model) {
@@ -63,24 +64,26 @@ public class QuizAppController {
     }
 
     @PostMapping("/save")
-    public String save(){
+    public String save(RedirectAttributes attributes){
         try {
             quizFileDao.write(quizzes);
-            return "ファイルに保存しました";
+            attributes.addFlashAttribute("successMessage","ファイルに保存しました");
         } catch (IOException e) {
             e.printStackTrace();
-            return "ファイルの保存に失敗しました";
+            attributes.addFlashAttribute("errorMessage","ファイルの保存に失敗しました");
         }
+        return "redirect:/page/show";
     }
 
     @GetMapping("/load")
-    public String load(){
+    public String load(RedirectAttributes attributes){
         try {
             quizzes = quizFileDao.read();
-            return "ファイルを読み込みました";
+            attributes.addFlashAttribute("successMessage","ファイルを読み込みました");
         } catch (IOException e) {
             e.printStackTrace();
-            return "ファイルの読み込みに失敗しました";
+            attributes.addFlashAttribute("errorMessage","ファイルの読み込みに失敗しました");
         }
+        return "redirect:/page/show";
     }
 }
